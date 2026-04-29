@@ -37,7 +37,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(Pico-E-Reader Pico-E-Reader.cpp )
+add_executable(Pico-E-Reader src/Pico-E-Reader.cpp )
 
 pico_set_program_name(Pico-E-Reader "Pico-E-Reader")
 pico_set_program_version(Pico-E-Reader "0.1")
