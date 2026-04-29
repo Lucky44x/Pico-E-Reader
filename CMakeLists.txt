@@ -23,7 +23,7 @@ if (EXISTS ${picoVscode})
     include(${picoVscode})
 endif()
 # ====================================================================================
-set(PICO_BOARD pico CACHE STRING "Board type")
+set(PICO_BOARD weact_studio_rp2040_16mb CACHE STRING "Board type")
 
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
@@ -37,18 +37,22 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(Pico-E-Reader src/Pico-E-Reader.cpp )
+add_executable(Pico-E-Reader 
+    src/Pico-E-Reader.cpp
+)
 
 pico_set_program_name(Pico-E-Reader "Pico-E-Reader")
 pico_set_program_version(Pico-E-Reader "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(Pico-E-Reader 0)
-pico_enable_stdio_usb(Pico-E-Reader 0)
+pico_enable_stdio_usb(Pico-E-Reader 1)
+
+# Add Sub-Directories
+add_subdirectory(libs/epdDraw)
 
 # Add the standard library to the build
-target_link_libraries(Pico-E-Reader
-        pico_stdlib)
+target_link_libraries(Pico-E-Reader pico_stdlib)
 
 # Add the standard include files to the build
 target_include_directories(Pico-E-Reader PRIVATE
@@ -57,8 +61,8 @@ target_include_directories(Pico-E-Reader PRIVATE
 
 # Add any user requested libraries
 target_link_libraries(Pico-E-Reader 
-        hardware_spi
-        )
+    hardware_spi
+    epdDraw
+)
 
 pico_add_extra_outputs(Pico-E-Reader)
-
