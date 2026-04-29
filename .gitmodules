@@ -1,0 +1,3 @@
+[submodule "libs/pico_fatfs"]
+	path = libs/pico_fatfs
+	url = https://github.com/elehobica/pico_fatfs
