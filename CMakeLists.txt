@@ -49,6 +49,8 @@ pico_enable_stdio_uart(Pico-E-Reader 0)
 pico_enable_stdio_usb(Pico-E-Reader 1)
 
 # Add Sub-Directories
+add_subdirectory(libs/pico_fatfs)
+add_subdirectory(libs/microMD)
 add_subdirectory(libs/epdDraw)
 
 # Add the standard library to the build
@@ -63,6 +65,8 @@ target_include_directories(Pico-E-Reader PRIVATE
 target_link_libraries(Pico-E-Reader 
     hardware_spi
     epdDraw
+    pico_fatfs
+    microMD
 )
 
 pico_add_extra_outputs(Pico-E-Reader)
