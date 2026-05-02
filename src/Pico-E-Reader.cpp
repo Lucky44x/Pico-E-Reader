@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
+#include "input.h"
 
 #include "Page_Renderer.hpp"
 
@@ -9,6 +10,12 @@ extern "C" {
     #include "ff.h"
     #include "tf_card.h"
 }
+
+#define BUTTON_PREV 1
+#define BUTTON_SELECT 2
+#define BUTTON_NEXT 3
+
+InputManager inputManager;
 
 canvas_config_t cfg;
 text_style_t style = STYLE_DEFAULT;
@@ -90,6 +97,19 @@ int main()
     canvas_init(&cfg);
     sleep_ms(100);
 
+    inputManager.init(2000);
+    bool input_ok = true;
+    if (!inputManager.register_button_pin(9, BUTTON_SELECT)) input_ok = false;
+    if (!inputManager.register_button_pin(8, BUTTON_PREV)) input_ok = false;
+    if (!inputManager.register_button_pin(5, BUTTON_NEXT)) input_ok = false;
+    if (!input_ok) {
+        style.bold = true;
+        canvas_draw_text_u8(&cfg, &style, "ERROR", 0, 0, CANVAS_COLOR_BW_BLACK, 0, 0);
+        style.bold = false;
+        canvas_draw_text_u8(&cfg, &style, "Failed to initialize InputManager", 0, 18, CANVAS_COLOR_BW_BLACK, 0, 0);
+        return -1;
+    }
+
     canvas_clear(&cfg, CANVAS_COLOR_BW_WHITE);
 
     // Initialize File-System
@@ -105,12 +125,18 @@ int main()
     // Open first page and render
     pageRend.OpenFile(&txtFile);
 
-    printf("Finished parsing");
+    gpio_put(ONBOARD_LED, 0);
 
     while (true) {
-        gpio_put(ONBOARD_LED, 0);
-        sleep_ms(250);
-        gpio_put(ONBOARD_LED, 1);
-        sleep_ms(250);
+        InputEvent ev;
+        if (inputManager.poll_event(ev)) {
+            if (ev.code != BUTTON_NEXT) continue;
+            if (ev.type != InputManager::EVENT_PRESS) continue;
+            gpio_put(ONBOARD_LED, 1);
+            pageRend.NextPage();
+            gpio_put(ONBOARD_LED, 0);
+        }
+
+        sleep_ms(100);
     }
 }
