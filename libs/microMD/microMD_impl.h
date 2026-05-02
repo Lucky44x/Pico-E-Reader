@@ -15,6 +15,14 @@ void refill_text_rbuffer(microMD_parser_t *parser);
 size_t enqueue_rbuffer(microMD_parser_t *parser, uint8_t *data, size_t len);
 uint8_t read_rbuffer(microMD_parser_t *parser);
 
+void push_character_to_word(microMD_parser_t *parser, uint16_t codepoint);
+void push_character_to_tag(microMD_parser_t *parser, uint16_t codepoint);
+
 bool decode_next_utf8_from_buffer(microMD_parser_t *parser, uint16_t *codepoint_out);
+
+bool tag_state_machine(microMD_parser_t *parser);
+bool perform_style_tag_processing(uint16_t style_char, bool unset, style_set_t *style_set);
+
+bool perform_word_render(microMD_parser_t *parser);
 
 #endif

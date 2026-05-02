@@ -13,6 +13,11 @@ It uses the usual Escape character, that being `\`.
 | `<s>`  | `<s> Strikethrough </s>` | Strikethrough text            |
 | `<h>`  | `<h> HEADER </h>`        | Enlarges the Text-Size by x2  | 
 
+Possibles for the Future
+| Tag   | Usage                                             | Explanation   |
+| -     | -                                                 | -             |
+| `<r>` | `<r> hollow / reversed-color characters </r>`     | Character gets drawn 5 times, first in black with -1 and +1px in x and y, then in white in proper location. Creats a sort of Hollowed-Out character, which might be useful for a similar effect to bold. Problem: Adds 2 px in height to each character
+
 As you can see, the tags are pretty much identical to HTML tags... this was done because HTML notation is the notation that is most human readable, while also being not very likely to collide with actual text in books
 
 ## Meta-Tags

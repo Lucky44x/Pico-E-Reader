@@ -379,7 +379,7 @@ uint8_t canvas_draw_char(canvas_config_t *cfg, text_style_t *style, uint16_t cod
     }
 
     if (style->italic) advance += height / ITALIC_DIVISOR; // Apply italic divisor to advance value
-    if (style->bold) advance += 1;
+    //if (style->bold) advance += 1;
 
     // Render Underline if style is set BUT ignore space
     if (style->underlined && codepoint != 32) {
@@ -400,31 +400,13 @@ void canvas_draw_text(canvas_config_t *cfg, text_style_t *style, const uint16_t 
 
     for (size_t i = 0; i < len; i++) {
         uint8_t advance;
-        /* TODO: Implement Truncation on demand and wrapping on demand
-         = canvas_get_char_width(text[i]);
-        
-        bool needsTruncation = (i < len - 1) &&
-                                (maxTextArea != 0) &&
-                                (used_width + char_width + ellipsis_width > maxTextArea);
-        if (needsTruncation) {
-            //Draw "."
-            for(int j = 0; j < 3; j ++) {
-                x += canvas_draw_char(cfg, dot, x, yPoint, color) + spacing; //No NULL check needed, dots are always defined... otherwise its a shit font
-            }
-            return;
-        }
-        */
+        if ((text[i] <= 0x1F && text[i] > 0x00) || text[i] == 0x7F) continue; // Control character, not important
 
         //Redundency but what the hell, why not
         advance = canvas_draw_char(cfg, style, text[i], x, yPoint, color);
         x += advance;
         
         used_width += advance;
-        /*
-        if (i < len - 1) {
-            if (advance > 0) { x += spacing; used_width += spacing; }
-        }
-        */
     }
 }
 
@@ -454,11 +436,20 @@ uint8_t canvas_get_char_width(uint16_t codepoint, text_style_t *style) {
 
     //4th byte = advance byte
     uint8_t advance = glyph[3];
-    if (style->bold) advance += 1;
-    if (style->italic) advance += height / ITALIC_DIVISOR;
+    if (codepoint != ' ') {
+        //if (style->bold) advance += 1;
+        if (style->italic) advance += height / ITALIC_DIVISOR;
+    }
 
     return advance;
-   return 0;
+}
+
+uint16_t canvas_get_word_width(uint16_t *word, size_t word_length, text_style_t *style) {
+    uint16_t total_length = 0;
+    for (uint cIdx = 0; cIdx < word_length; cIdx ++) {
+        total_length += canvas_get_char_width(word[cIdx], style);
+    }
+    return total_length;
 }
 
 /******************************************************************************

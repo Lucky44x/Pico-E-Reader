@@ -39,6 +39,7 @@ pico_sdk_init()
 
 add_executable(Pico-E-Reader 
     src/Pico-E-Reader.cpp
+    src/Page_Renderer.cpp
 )
 
 pico_set_program_name(Pico-E-Reader "Pico-E-Reader")
@@ -52,6 +53,7 @@ pico_enable_stdio_usb(Pico-E-Reader 1)
 add_subdirectory(libs/pico_fatfs)
 add_subdirectory(libs/microMD)
 add_subdirectory(libs/epdDraw)
+add_subdirectory(libs/input)
 
 # Add the standard library to the build
 target_link_libraries(Pico-E-Reader pico_stdlib)
@@ -67,6 +69,7 @@ target_link_libraries(Pico-E-Reader
     epdDraw
     pico_fatfs
     microMD
+    input
 )
 
 pico_add_extra_outputs(Pico-E-Reader)

@@ -3,6 +3,7 @@
 
 #include "pico/stdlib.h"
 #include "stdio.h"
+#include <string.h>
 #include "epd2in9.h"
 
 #define CANVAS_ROTATE_0 0
@@ -54,12 +55,22 @@ typedef enum {
     DRAW_FILL_FULL,
 } CANVAS_DRAW_FILL;
 
+/*
+    BOLD
+    ITALIC
+    UNDERLINED
+    DOTTED
+    STRIKETHROUGH
+
+    TRUNCATE
+    WRAP
+*/
 typedef struct {
-    bool bold, italic, underlined, strikethrough, truncate, wrap;
+    bool bold, italic, underlined, dotted, strikethrough, truncate, wrap;
 } text_style_t;
 
 static text_style_t STYLE_DEFAULT = {
-    false, false, false, false, false, false
+    false, false, false, false, false, false, false
 };
 
 typedef struct {
@@ -99,7 +110,9 @@ void canvas_draw_rect(canvas_config_t *cfg, uint16_t xStart, uint16_t yStart, ui
 void canvas_draw_circle(canvas_config_t *cfg, uint16_t xCenter, uint16_t yCenter, uint16_t radius, uint8_t color, CANVAS_DOT_SIZE lineWidth, CANVAS_DRAW_FILL fillStyle);
 uint8_t canvas_draw_char(canvas_config_t *cfg, text_style_t *style, uint16_t character, uint16_t xPoint, uint16_t yPoint, uint8_t color);
 void canvas_draw_text(canvas_config_t *cfg, text_style_t *style, const uint16_t *text, size_t len, uint16_t xPoint, uint16_t yPoint, uint8_t color, uint8_t spacing, uint16_t maxTextArea);
+
 uint8_t canvas_get_char_width(uint16_t character, text_style_t *style);
+uint16_t canvas_get_word_width(uint16_t *word, size_t word_length, text_style_t *style);
 void canvas_draw_bitmap(canvas_config_t *cfg, const uint8_t *imageBuffer, uint16_t xPoint, uint16_t yPoint, uint16_t width, uint16_t height, uint8_t bpp, bool invert);
 
 // General
@@ -107,5 +120,15 @@ void canvas_refresh_screen(canvas_config_t *cfg);
 void canvas_refresh_partial(canvas_config_t *cfg, uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 void canvas_init_partial(canvas_config_t *cfg);
 void canvas_refresh_screen_fast(canvas_config_t *cfg);
+
+// Helper
+static void canvas_draw_text_u8(canvas_config_t *cfg, text_style_t *style, const char *text, uint16_t xPoint, uint16_t yPoint, uint8_t color, uint8_t spacing, uint16_t maxTextArea) {
+    size_t len = strlen((char *)text);
+    uint16_t codepoints[len];
+    for (size_t i = 0; i < len; i++) {
+        codepoints[i] = (uint16_t)text[i];
+    }
+    canvas_draw_text(cfg, style, codepoints, len, xPoint, yPoint, color, spacing, maxTextArea);
+}
 
 #endif //EPDDRAW_H
